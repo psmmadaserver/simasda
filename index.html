@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#078f79">
+<meta name="description" content="Si MasDA — Sistem Manajemen MAS Darul Amin">
+<title>Si MasDA — Sistem Manajemen MAS Darul Amin</title>
+<style>
+:root{--green:#078f79;--green2:#0ca58a;--navy:#193064;--gold:#ffbf00;--muted:#687894}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#f3f6fb;color:var(--navy)}.app{position:fixed;inset:0}.frame{border:0;width:100%;height:100%;display:none;background:#f3f6fb}.setup-wrap{position:absolute;inset:0;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at top left,#dff8f0 0,transparent 45%),linear-gradient(135deg,#f8fbff,#edf3fa)}.card{width:min(560px,100%);background:#fff;border:1px solid #e3eaf3;border-top:5px solid var(--gold);border-radius:24px;padding:clamp(24px,5vw,42px);box-shadow:0 24px 70px #17335b16}.brand{display:flex;align-items:center;gap:14px;margin-bottom:26px}.logo{width:54px;height:54px;display:grid;place-items:center;border-radius:17px;background:linear-gradient(135deg,#10b981,#087b70);color:#fff;font-size:21px;font-weight:900;box-shadow:0 10px 24px #078f7930}.brand h1{font-size:24px;margin:0 0 4px}.brand p{margin:0;color:var(--muted);font-size:13px}.pill{display:inline-flex;background:#eaf8f3;color:#087b70;padding:7px 11px;border-radius:999px;font-size:12px;font-weight:800;margin-bottom:12px}.card h2{font-size:20px;margin:0 0 10px}.desc{color:var(--muted);font-size:14px;line-height:1.65;margin:0 0 22px}.field-label{display:block;font-size:13px;font-weight:800;margin-bottom:8px}input{width:100%;border:1px solid #cbd6e5;border-radius:12px;padding:14px 13px;font:inherit;font-size:14px;outline:none}input:focus{border-color:var(--green2);box-shadow:0 0 0 3px #0ca58a1c}.hint{font-size:12px;line-height:1.6;color:var(--muted);margin:9px 0 18px}.actions{display:flex;gap:10px;flex-wrap:wrap}button,.button{border:0;border-radius:12px;padding:12px 16px;background:linear-gradient(135deg,var(--green2),var(--green));color:white;font:inherit;font-weight:800;font-size:14px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.secondary{background:#eef3f8;color:var(--navy)}.error{display:none;color:#b42318;background:#fff0ef;border:1px solid #ffd4d0;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.5;margin:0 0 14px}.footer{font-size:11px;color:#8a97ab;margin-top:22px;line-height:1.5}.toolbar{position:fixed;right:12px;top:12px;z-index:5;display:none;gap:8px}.toolbar button{padding:9px 12px;box-shadow:0 5px 18px #10203b20}.hidden{display:none!important}@media(max-width:480px){.card{border-radius:18px}.brand h1{font-size:21px}.actions>*{width:100%}}
+</style>
+</head>
+<body>
+<main class="app">
+  <section class="setup-wrap" id="setup">
+    <div class="card">
+      <div class="brand"><div class="logo">Si</div><div><h1>Si MasDA</h1><p>Sistem Manajemen MAS Darul Amin</p></div></div>
+      <div class="pill">PENGATURAN AWAL · SEKALI SAJA</div>
+      <h2>Hubungkan aplikasi Si MasDA</h2>
+      <p class="desc">Masukkan URL Web App Google Apps Script yang aktif. Halaman ini tidak dapat menebak URL deployment Anda; gunakan URL produksi yang disalin dari menu Manage deployments.</p>
+      <form id="url-form">
+        <label class="field-label" for="gas-url">URL Web App Google Apps Script</label>
+        <input id="gas-url" type="url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="url" required>
+        <p class="hint">Buka Apps Script → <b>Deploy → Manage deployments</b> → salin Web app URL yang berakhir dengan <b>/exec</b>. Jangan gunakan URL pengujian yang berakhir dengan /dev.</p>
+        <div class="error" id="error" role="alert"></div>
+        <div class="actions"><button type="submit">Simpan &amp; Buka Si MasDA</button><button type="button" class="secondary" id="clear">Hapus URL tersimpan</button></div>
+      </form>
+      <div class="footer">URL disimpan hanya di penyimpanan lokal browser ini. Jika memakai komputer bersama, jangan aktifkan opsi simpan kata sandi browser.</div>
+    </div>
+  </section>
+  <iframe class="frame" id="gas-frame" title="Si MasDA — Sistem Manajemen MAS Darul Amin" allow="camera; microphone; geolocation; fullscreen; autoplay" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  <div class="toolbar" id="toolbar"><button id="change-url" type="button">⚙ Ganti URL aplikasi</button><button id="open-direct" type="button">Buka di tab baru ↗</button></div>
+</main>
+<script>
+(function(){
+ const KEY='sim asda_gas_webapp_url_v1'.replace(' ','');
+ const setup=document.getElementById('setup'), form=document.getElementById('url-form'), input=document.getElementById('gas-url'), error=document.getElementById('error'), frame=document.getElementById('gas-frame'), toolbar=document.getElementById('toolbar');
+ let currentUrl='';
+ function validate(raw){let u;try{u=new URL(raw.trim())}catch(e){return 'URL tidak valid. Salin URL Web App dari Apps Script.'}if(u.protocol!=='https:'||u.hostname!=='script.google.com'||!/^\/macros\/s\/[^/]+\/exec\/?$/.test(u.pathname))return 'Gunakan URL produksi Google Apps Script dari Manage deployments yang berformat https://script.google.com/macros/s/ID_DEPLOYMENT/exec.';return ''}
+ function showSetup(message){setup.classList.remove('hidden');frame.style.display='none';toolbar.style.display='none';if(currentUrl)input.value=currentUrl;error.textContent=message||'';error.style.display=message?'block':'none'}
+ function openApp(url){currentUrl=url;localStorage.setItem(KEY,url);setup.classList.add('hidden');frame.style.display='block';toolbar.style.display='flex';frame.src=url;}
+ form.addEventListener('submit',function(e){e.preventDefault();const raw=input.value.trim(),msg=validate(raw);if(msg){error.textContent=msg;error.style.display='block';return}openApp(new URL(raw).href)});
+ document.getElementById('clear').addEventListener('click',function(){localStorage.removeItem(KEY);currentUrl='';input.value='';error.style.display='none'});
+ document.getElementById('change-url').addEventListener('click',function(){showSetup('Masukkan URL deployment GAS yang benar. URL baru akan menggantikan URL tersimpan.')});
+ document.getElementById('open-direct').addEventListener('click',function(){if(currentUrl)window.open(currentUrl,'_blank','noopener,noreferrer')});
+ const saved=localStorage.getItem(KEY);if(saved&&!validate(saved))openApp(saved);else showSetup('');
+})();
+</script>
+</body>
+</html>
